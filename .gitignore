@@ -1,0 +1,39 @@
+### Dependencies
+node_modules/
+/.pnp/
+.pnp.*
+
+### Environment and secrets
+.env
+.env.*
+!.env.example
+!.env.sample
+*.pem
+*.key
+*.crt
+
+### Build output and caches
+dist/
+build/
+.next/
+out/
+coverage/
+.cache/
+.turbo/
+.eslintcache
+
+### Logs and runtime files
+*.log
+logs/
+*.pid
+*.pid.lock
+
+### Local tooling
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+.idea/
+.vscode/
+!.vscode/extensions.json
+!.vscode/settings.json
