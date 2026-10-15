@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 import type { Rental } from "@/types/rental";
 
 function PinIcon() {
@@ -19,7 +20,10 @@ function PinIcon() {
 
 export function RentalCard({ rental }: { rental: Rental }) {
   return (
-    <article className="overflow-hidden rounded-2xl bg-white shadow-[0_8px_30px_rgba(15,23,42,0.04)] ring-1 ring-slate-100 transition hover:-translate-y-1 hover:shadow-lg">
+    <Link
+      href={`/listing/${rental.id}`}
+      className="block overflow-hidden rounded-2xl bg-white shadow-[0_8px_30px_rgba(15,23,42,0.04)] ring-1 ring-slate-100 transition hover:-translate-y-1 hover:shadow-lg"
+    >
       <Image
         src={rental.image}
         alt={rental.alt}
@@ -42,6 +46,6 @@ export function RentalCard({ rental }: { rental: Rental }) {
           {rental.location}
         </p>
       </div>
-    </article>
+    </Link>
   );
 }

@@ -3,7 +3,7 @@ import type { Rental } from "@/types/rental";
 export const rentals: Rental[] = [
   {
     id: 1,
-    image: "https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=900&q=85",
+    image: "/rentals/sunny-baneshwor.jpg",
     price: "16,500",
     type: "1 BHK Flat",
     location: "New Baneshwor, Kathmandu",
@@ -11,7 +11,7 @@ export const rentals: Rental[] = [
   },
   {
     id: 2,
-    image: "https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?auto=format&fit=crop&w=900&q=85",
+    image: "/rentals/jhamsikhel-studio.jpg",
     price: "9,000",
     type: "Single Room",
     location: "Jhamsikhel, Lalitpur",
@@ -19,7 +19,7 @@ export const rentals: Rental[] = [
   },
   {
     id: 3,
-    image: "https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?auto=format&fit=crop&w=900&q=85",
+    image: "/rentals/baluwatar-flat.jpg",
     price: "28,000",
     type: "2 BHK Flat",
     location: "Baluwatar, Kathmandu",
@@ -27,7 +27,7 @@ export const rentals: Rental[] = [
   },
   {
     id: 4,
-    image: "https://images.unsplash.com/photo-1598928506311-c55ded91a20c?auto=format&fit=crop&w=900&q=85",
+    image: "/rentals/koteshwor-room.jpg",
     price: "12,000",
     type: "Studio Flat",
     location: "Koteshwor, Kathmandu",
@@ -35,7 +35,7 @@ export const rentals: Rental[] = [
   },
   {
     id: 5,
-    image: "https://images.unsplash.com/photo-1600607688969-a5bfcd646154?auto=format&fit=crop&w=900&q=85",
+    image: "/rentals/lakeside-flat.jpg",
     price: "22,000",
     type: "2 BHK Flat",
     location: "Lakeside, Pokhara",
@@ -43,7 +43,7 @@ export const rentals: Rental[] = [
   },
   {
     id: 6,
-    image: "https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?auto=format&fit=crop&w=900&q=85",
+    image: "/rentals/sanepa-room.jpg",
     price: "8,500",
     type: "Single Room",
     location: "Sanepa, Lalitpur",
