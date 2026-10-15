@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { SiteHeader } from "@/components/SiteHeader";
 
 export default function DashboardPage() {
@@ -16,12 +17,20 @@ export default function DashboardPage() {
         <p className="mt-4 max-w-xl text-slate-600">
           Your landlord tools are ready. Add a room to start connecting with tenants.
         </p>
-        <button
-          type="button"
-          className="mt-8 rounded-xl bg-brand-600 px-6 py-3 font-semibold text-white transition hover:bg-brand-700"
-        >
-          Add a room
-        </button>
+        <div className="mt-8 flex flex-wrap gap-3">
+          <Link
+            href="/post-listing"
+            className="rounded-xl bg-brand-600 px-6 py-3 font-semibold text-white transition hover:bg-brand-700"
+          >
+            Add a room
+          </Link>
+          <Link
+            href="/my-listings"
+            className="rounded-xl border border-slate-200 bg-white px-6 py-3 font-semibold text-slate-700 transition hover:border-brand-200 hover:text-brand-700"
+          >
+            View my listings
+          </Link>
+        </div>
       </section>
     </main>
   );
