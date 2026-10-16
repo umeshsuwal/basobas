@@ -28,7 +28,7 @@ const roleOptions: { value: UserRole; label: string }[] = [
 ];
 
 export function LoginForm() {
-  const [mode, setMode] = useState<AuthMode>("login");
+  const [mode, setMode] = useState<AuthMode>("signup");
   const [role, setRole] = useState<UserRole>("tenant");
   const [form, setForm] = useState<AuthForm>(INITIAL_FORM);
   const [error, setError] = useState("");
@@ -52,7 +52,7 @@ export function LoginForm() {
           : await mockLogin(form.email, form.password);
 
       login(response.user, response.token);
-      router.push(response.user.role === "landlord" ? "/dashboard" : "/");
+      router.push(response.user.role === "landlord" ? "/dashboard" : "/feed");
     } catch (requestError: unknown) {
       setError(
         requestError instanceof Error
@@ -66,15 +66,15 @@ export function LoginForm() {
 
   return (
     <>
-      <div className="mb-6 flex rounded-lg bg-slate-100 p-1">
-        {(["login", "signup"] as const).map((nextMode) => (
+      <div className="mb-6 flex rounded-xl bg-brand-50 p-1">
+        {(["signup", "login"] as const).map((nextMode) => (
           <button
             key={nextMode}
             type="button"
             onClick={() => setMode(nextMode)}
             className={`flex-1 rounded-md py-2 text-sm font-medium transition ${
               mode === nextMode
-                ? "bg-white text-slate-900 shadow-sm"
+                ? "bg-white text-brand-700 shadow-sm"
                 : "text-slate-500 hover:text-slate-700"
             }`}
           >
@@ -86,57 +86,73 @@ export function LoginForm() {
       <form onSubmit={handleSubmit} className="space-y-4">
         {mode === "signup" && (
           <>
-            <input
-              className="w-full rounded-lg border border-slate-200 p-3 outline-none transition placeholder:text-slate-400 focus:border-brand-600 focus:ring-2 focus:ring-brand-100"
-              placeholder="Full name"
-              required
-              value={form.name}
-              onChange={(event) => updateField("name", event.target.value)}
-            />
-            <input
-              className="w-full rounded-lg border border-slate-200 p-3 outline-none transition placeholder:text-slate-400 focus:border-brand-600 focus:ring-2 focus:ring-brand-100"
-              placeholder="Phone number"
-              required
-              value={form.phone}
-              onChange={(event) => updateField("phone", event.target.value)}
-            />
+            <fieldset>
+              <legend className="mb-2 text-sm font-medium text-slate-800">
+                I am joining as
+              </legend>
+              <div className="grid grid-cols-2 gap-3">
+                {roleOptions.map((option) => (
+                  <button
+                    key={option.value}
+                    type="button"
+                    onClick={() => setRole(option.value)}
+                    className={`rounded-xl border p-3 text-sm transition ${
+                      role === option.value
+                        ? "border-brand-600 bg-brand-50 text-brand-700 ring-1 ring-brand-600"
+                        : "border-slate-200 text-slate-600 hover:border-brand-200"
+                    }`}
+                  >
+                    {option.value === "tenant" ? "🏠 " : "🔑 "}
+                    {option.label}
+                  </button>
+                ))}
+              </div>
+            </fieldset>
+            <label className="block text-sm font-medium text-slate-800">
+              Full Name
+              <input
+                className="mt-2 w-full rounded-xl bg-brand-50 p-3 font-normal outline-none transition placeholder:text-slate-400 focus:ring-2 focus:ring-brand-100"
+                placeholder="e.g. Aarav Sharma"
+                required
+                value={form.name}
+                onChange={(event) => updateField("name", event.target.value)}
+              />
+            </label>
+            <label className="block text-sm font-medium text-slate-800">
+              Phone Number
+              <input
+                className="mt-2 w-full rounded-xl bg-brand-50 p-3 font-normal outline-none transition placeholder:text-slate-400 focus:ring-2 focus:ring-brand-100"
+                placeholder="98XXXXXXXX"
+                required
+                value={form.phone}
+                onChange={(event) => updateField("phone", event.target.value)}
+              />
+            </label>
           </>
         )}
-        <input
-          className="w-full rounded-lg border border-slate-200 p-3 outline-none transition placeholder:text-slate-400 focus:border-brand-600 focus:ring-2 focus:ring-brand-100"
-          type="email"
-          placeholder="Email"
-          required
-          value={form.email}
-          onChange={(event) => updateField("email", event.target.value)}
-        />
-        <input
-          className="w-full rounded-lg border border-slate-200 p-3 outline-none transition placeholder:text-slate-400 focus:border-brand-600 focus:ring-2 focus:ring-brand-100"
-          type="password"
-          placeholder="Password"
-          required
-          value={form.password}
-          onChange={(event) => updateField("password", event.target.value)}
-        />
-
-        {mode === "signup" && (
-          <div className="grid grid-cols-2 gap-3">
-            {roleOptions.map((option) => (
-              <button
-                key={option.value}
-                type="button"
-                onClick={() => setRole(option.value)}
-                className={`rounded-lg border p-3 text-sm transition ${
-                  role === option.value
-                    ? "border-brand-600 bg-brand-50 text-brand-700"
-                    : "border-slate-200 text-slate-600 hover:border-brand-200"
-                }`}
-              >
-                {option.label}
-              </button>
-            ))}
-          </div>
-        )}
+        <label className="block text-sm font-medium text-slate-800">
+          Email Address
+          <input
+            className="mt-2 w-full rounded-xl bg-brand-50 p-3 font-normal outline-none transition placeholder:text-slate-400 focus:ring-2 focus:ring-brand-100"
+            type="email"
+            placeholder="name@example.com"
+            required
+            value={form.email}
+            onChange={(event) => updateField("email", event.target.value)}
+          />
+        </label>
+        <label className="block text-sm font-medium text-slate-800">
+          Password
+          <input
+            className="mt-2 w-full rounded-xl bg-brand-50 p-3 font-normal outline-none transition placeholder:text-slate-400 focus:ring-2 focus:ring-brand-100"
+            type="password"
+            placeholder="At least 8 characters"
+            minLength={8}
+            required
+            value={form.password}
+            onChange={(event) => updateField("password", event.target.value)}
+          />
+        </label>
 
         {error && (
           <p role="alert" className="text-sm text-red-600">
@@ -147,7 +163,7 @@ export function LoginForm() {
         <button
           type="submit"
           disabled={loading}
-          className="w-full rounded-lg bg-brand-600 p-3 font-medium text-white transition hover:bg-brand-700 disabled:cursor-not-allowed disabled:opacity-50"
+          className="w-full rounded-xl bg-brand-700 p-3 font-semibold text-white transition hover:bg-brand-900 disabled:cursor-not-allowed disabled:opacity-50"
         >
           {loading
             ? "Please wait..."
@@ -155,6 +171,11 @@ export function LoginForm() {
               ? "Log In"
               : "Create Account"}
         </button>
+        <p className="text-center text-xs leading-5 text-slate-500">
+          By continuing, you agree to Basobas{" "}
+          <span className="font-medium text-brand-700">Terms</span> &amp;{" "}
+          <span className="font-medium text-brand-700">Privacy Policy</span>.
+        </p>
       </form>
     </>
   );
