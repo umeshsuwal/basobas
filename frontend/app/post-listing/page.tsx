@@ -3,6 +3,7 @@
 import { FormEvent, useState } from "react";
 import Link from "next/link";
 import { AccountHeader } from "@/components/AccountHeader";
+import { RoleGate } from "@/components/RoleGate";
 
 export default function PostListingPage() {
   const [roomType, setRoomType] = useState("Single Room");
@@ -14,7 +15,7 @@ export default function PostListingPage() {
   }
 
   return (
-    <main className="min-h-screen bg-[#f8f9ff]">
+    <RoleGate role="landlord"><main className="min-h-screen bg-[#f8f9ff]">
       <AccountHeader role="Landlord Account" title="Post a listing" />
       <section className="mx-auto max-w-2xl px-6 py-14">
         <div className="mb-8 text-center"><h1 className="text-3xl font-bold text-slate-900">Post a Listing</h1><p className="mt-2 text-slate-600">List your room or flat in under 2 minutes. Free forever for direct owners.</p></div>
@@ -29,6 +30,6 @@ export default function PostListingPage() {
           <Link href="/my-listings" className="block text-center text-sm text-brand-700 hover:underline">View my listings →</Link>
         </form>
       </section>
-    </main>
+    </main></RoleGate>
   );
 }

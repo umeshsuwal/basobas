@@ -1,12 +1,11 @@
 import Link from "next/link";
-import { SiteHeader } from "@/components/SiteHeader";
+import { AccountHeader } from "@/components/AccountHeader";
+import { RoleGate } from "@/components/RoleGate";
 
 export default function DashboardPage() {
   return (
-    <main className="min-h-screen bg-slate-50">
-      <header className="border-b border-slate-200 bg-white">
-        <SiteHeader action={false} />
-      </header>
+    <RoleGate role="landlord"><main className="min-h-screen bg-slate-50">
+      <AccountHeader role="Landlord Account" title="Dashboard" />
       <section className="mx-auto max-w-7xl px-6 py-16 lg:px-8">
         <p className="text-sm font-semibold uppercase tracking-[0.2em] text-brand-700">
           Dashboard
@@ -32,6 +31,6 @@ export default function DashboardPage() {
           </Link>
         </div>
       </section>
-    </main>
+    </main></RoleGate>
   );
 }
