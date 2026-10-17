@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { UserMenu } from "@/components/UserMenu";
 
 export function AccountHeader({
   role,
@@ -11,7 +12,10 @@ export function AccountHeader({
 
   return (
     <header className="border-b border-slate-200/80 bg-[#fbfbff]">
-      <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-5 lg:px-8">
+      <div
+        aria-label={`${role} ${title}`}
+        className="mx-auto flex max-w-7xl items-center justify-between px-6 py-5 lg:px-8"
+      >
         <Link href="/" className="flex items-center gap-2 text-lg font-bold text-slate-800">
           <span className="grid h-7 w-7 place-items-center rounded-lg bg-brand-600 text-sm text-white">⌂</span>
           Basobas<span className="text-xs text-brand-600">•</span>
@@ -31,9 +35,7 @@ export function AccountHeader({
             </>
           )}
         </div>
-        <span className="rounded-full bg-brand-50 px-4 py-2 text-xs font-medium text-brand-700">
-          {role} <span className="hidden sm:inline">• {title}</span>
-        </span>
+        <UserMenu />
       </div>
     </header>
   );

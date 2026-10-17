@@ -1,4 +1,7 @@
+"use client";
+
 import Link from "next/link";
+import { UserMenu } from "@/components/UserMenu";
 
 export function SiteHeader({ action = true }: { action?: boolean }) {
   return (
@@ -12,14 +15,7 @@ export function SiteHeader({ action = true }: { action?: boolean }) {
         <Link href="#how-it-works" className="transition hover:text-brand-700">How it Works</Link>
         <Link href="#areas" className="transition hover:text-brand-700">Explore Areas</Link>
       </div>
-      {action && (
-        <Link
-          href="/login"
-          className="rounded-full bg-brand-50 px-5 py-2.5 text-sm font-semibold text-brand-700 transition hover:bg-brand-100"
-        >
-          Log in
-        </Link>
-      )}
+      {action ? <UserMenu /> : null}
     </nav>
   );
 }
