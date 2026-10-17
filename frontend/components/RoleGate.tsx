@@ -12,17 +12,27 @@ export function RoleGate({
   role: UserRole;
   children: React.ReactNode;
 }) {
-  const { user } = useAuth();
+  const { user, isHydrated } = useAuth();
   const router = useRouter();
 
   useEffect(() => {
-    if (user && user.role !== role) {
+    if (isHydrated && !user) {
+      router.replace("/");
+    } else if (isHydrated && user && user.role !== role) {
       router.replace(user.role === "landlord" ? "/dashboard" : "/feed");
     }
-  }, [role, router, user]);
+  }, [isHydrated, role, router, user]);
 
-  if (!user || user.role !== role) {
+  if (!isHydrated) {
     return <main className="grid min-h-screen place-items-center bg-[#f8f9ff] text-sm text-slate-500">Checking your account...</main>;
+  }
+
+  if (!user) {
+    return <main className="grid min-h-screen place-items-center bg-[#f8f9ff] text-sm text-slate-500">Please log in to continue.</main>;
+  }
+
+  if (user.role !== role) {
+    return <main className="grid min-h-screen place-items-center bg-[#f8f9ff] text-sm text-slate-500">Redirecting to your account...</main>;
   }
 
   return children;

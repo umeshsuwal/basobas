@@ -1,15 +1,24 @@
 "use client";
 
-import { createContext, useContext, useState } from "react";
+import {
+  createContext,
+  useContext,
+  useState,
+  useSyncExternalStore,
+} from "react";
 import type { AuthUser } from "@/types/auth";
 
 interface AuthContextValue {
   user: AuthUser | null;
+  isHydrated: boolean;
   login: (user: AuthUser, token: string) => void;
   logout: () => void;
 }
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
+const subscribeToHydration = () => () => {};
+const getClientHydrationSnapshot = () => true;
+const getServerHydrationSnapshot = () => false;
 
 function readStoredUser(): AuthUser | null {
   if (typeof window === "undefined") return null;
@@ -26,7 +35,12 @@ function readStoredUser(): AuthUser | null {
 }
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [user, setUser] = useState<AuthUser | null>(readStoredUser);
+  const [user, setUser] = useState<AuthUser | null>(() => readStoredUser());
+  const isHydrated = useSyncExternalStore(
+    subscribeToHydration,
+    getClientHydrationSnapshot,
+    getServerHydrationSnapshot,
+  );
 
   function login(nextUser: AuthUser, token: string) {
     setUser(nextUser);
@@ -41,7 +55,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }
 
   return (
-    <AuthContext.Provider value={{ user, login, logout }}>
+    <AuthContext.Provider value={{ user, isHydrated, login, logout }}>
       {children}
     </AuthContext.Provider>
   );
