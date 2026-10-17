@@ -1,7 +1,32 @@
 import type { AuthResponse, SignupData, UserRole } from "@/types/auth";
 
 const MOCK_TOKEN = "mock-token-123";
-const MOCK_USER_ID = 1;
+
+export const DEMO_ACCOUNTS = {
+  tenant: {
+    email: "tenant@basobas.com",
+    password: "tenant123",
+    name: "Umesh Suwal",
+    phone: "9813456789",
+    role: "tenant",
+  },
+  landlord: {
+    email: "landlord@basobas.com",
+    password: "landlord123",
+    name: "Saroj Thapa",
+    phone: "9841382910",
+    role: "landlord",
+  },
+} as const satisfies Record<
+  UserRole,
+  {
+    email: string;
+    password: string;
+    name: string;
+    phone: string;
+    role: UserRole;
+  }
+>;
 
 function waitForMockRequest() {
   return new Promise((resolve) => setTimeout(resolve, 400));
@@ -13,7 +38,7 @@ export async function mockSignup(data: SignupData): Promise<AuthResponse> {
   return {
     token: MOCK_TOKEN,
     user: {
-      id: MOCK_USER_ID,
+      id: 1,
       name: data.name,
       email: data.email,
       phone: data.phone,
@@ -29,18 +54,26 @@ export async function mockLogin(email: string, password: string): Promise<AuthRe
     throw new Error("Email and password are required");
   }
 
-  const role: UserRole = email.toLowerCase().includes("landlord")
-    ? "landlord"
-    : "tenant";
+  const account = Object.values(DEMO_ACCOUNTS).find(
+    (demoAccount) =>
+      demoAccount.email === email.trim().toLowerCase() &&
+      demoAccount.password === password,
+  );
+
+  if (!account) {
+    throw new Error(
+      "Invalid demo credentials. Use one of the accounts shown below.",
+    );
+  }
 
   return {
     token: MOCK_TOKEN,
     user: {
-      id: MOCK_USER_ID,
-      name: "Demo User",
-      email,
-      phone: "9800000000",
-      role,
+      id: account.role === "landlord" ? 2 : 1,
+      name: account.name,
+      email: account.email,
+      phone: account.phone,
+      role: account.role,
     },
   };
 }

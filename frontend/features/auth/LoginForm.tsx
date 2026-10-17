@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { mockLogin, mockSignup } from "@/lib/auth/mockAuth";
+import { DEMO_ACCOUNTS, mockLogin, mockSignup } from "@/lib/auth/mockAuth";
 import type { UserRole } from "@/types/auth";
 import { useAuth } from "@/providers/AuthProvider";
 
@@ -153,6 +153,20 @@ export function LoginForm() {
             onChange={(event) => updateField("password", event.target.value)}
           />
         </label>
+
+        {mode === "login" && (
+          <div className="rounded-xl border border-blue-100 bg-brand-50 p-3 text-xs leading-5 text-slate-600">
+            <p className="font-semibold text-slate-900">Demo credentials</p>
+            <p className="mt-1">
+              Tenant: <code>{DEMO_ACCOUNTS.tenant.email}</code> /{" "}
+              <code>{DEMO_ACCOUNTS.tenant.password}</code>
+            </p>
+            <p>
+              Landlord: <code>{DEMO_ACCOUNTS.landlord.email}</code> /{" "}
+              <code>{DEMO_ACCOUNTS.landlord.password}</code>
+            </p>
+          </div>
+        )}
 
         {error && (
           <p role="alert" className="text-sm text-red-600">
