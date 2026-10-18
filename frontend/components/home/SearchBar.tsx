@@ -30,11 +30,11 @@ export function SearchBar({ value, onChange, onSubmit }: SearchBarProps) {
     >
       <label className="flex min-w-0 flex-1 items-center gap-3 px-3 text-slate-400">
         <SearchIcon />
-        <span className="sr-only">Search by area or city</span>
+        <span className="sr-only">Search by area, city, or room type</span>
         <input
           value={value}
           onChange={(event) => onChange(event.target.value)}
-          placeholder="Search by area or city (e.g. Kathmandu, Jhamsikhel, Pokhara...)"
+          placeholder="Search by area, city, or room type (e.g. Kathmandu, studio...)"
           className="min-w-0 flex-1 bg-transparent py-2 text-sm text-slate-700 outline-none placeholder:text-slate-400"
         />
       </label>

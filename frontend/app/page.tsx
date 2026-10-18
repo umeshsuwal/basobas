@@ -20,7 +20,7 @@ export default function Home() {
     }
 
     return rentals.filter((rental) =>
-      rental.location.toLowerCase().includes(normalizedQuery),
+      `${rental.location} ${rental.type}`.toLowerCase().includes(normalizedQuery),
     );
   }, [submittedQuery]);
 

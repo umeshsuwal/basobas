@@ -1,14 +1,8 @@
 import Image from "next/image";
 import Link from "next/link";
+import { notFound } from "next/navigation";
 import { SiteHeader } from "@/components/SiteHeader";
-
-const listing = {
-  title: "Sunny 1 BHK in Baneshwor",
-  image: "/rentals/sunny-baneshwor.jpg",
-  price: "16,500",
-  location: "Shantinagar, New Baneshwor, Kathmandu (5 min walk to Civil Hospital)",
-  description: "Namaste! We are renting out a bright, clean second-floor 1 BHK unit located in a peaceful residential neighborhood in Shantinagar, New Baneshwor. The flat catches natural afternoon sunshine through wide sliding doors leading out to your private balcony, offering clear open air and mountain views on crisp mornings.",
-};
+import { rentals } from "@/lib/rentals";
 
 const details = [
   ["Room type", "1 BHK Flat"],
@@ -17,7 +11,24 @@ const details = [
   ["Available from", "Immediate"],
 ];
 
-export default function ListingDetailPage() {
+export default async function ListingDetailPage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  const { id } = await params;
+  const rental = rentals.find((item) => item.id === Number(id));
+
+  if (!rental) {
+    notFound();
+  }
+
+  const listing = {
+    ...rental,
+    title: `${rental.type} in ${rental.location.split(",")[0]}`,
+    description: `A well-maintained ${rental.type.toLowerCase()} in ${rental.location}, with a comfortable layout and convenient access to nearby amenities.`,
+  };
+
   return (
     <main className="min-h-screen bg-[#f8f9ff]">
       <header className="border-b border-slate-200/80 bg-[#fbfbff]"><SiteHeader /></header>
