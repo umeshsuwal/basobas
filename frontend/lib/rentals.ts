@@ -8,6 +8,7 @@ export const rentals: Rental[] = [
     type: "1 BHK Flat",
     location: "New Baneshwor, Kathmandu",
     alt: "Bright living room with a balcony",
+    features: ["24/7 Water Supply", "Electricity Sub-meter", "Private Balcony", "Gated Bike Parking"],
   },
   {
     id: 2,
@@ -16,6 +17,7 @@ export const rentals: Rental[] = [
     type: "Single Room",
     location: "Jhamsikhel, Lalitpur",
     alt: "Comfortable bedroom with a large window",
+    features: ["24/7 Water Supply", "Furnished", "Wi-Fi Ready"],
   },
   {
     id: 3,
@@ -24,6 +26,7 @@ export const rentals: Rental[] = [
     type: "2 BHK Flat",
     location: "Baluwatar, Kathmandu",
     alt: "Spacious modern living room",
+    features: ["24/7 Water Supply", "Parking", "Solar Backup", "Pet Friendly"],
   },
   {
     id: 4,
@@ -32,6 +35,7 @@ export const rentals: Rental[] = [
     type: "Studio Flat",
     location: "Koteshwor, Kathmandu",
     alt: "Small furnished studio room",
+    features: ["Electricity Sub-meter", "Furnished", "Gated Parking"],
   },
   {
     id: 5,
@@ -40,6 +44,7 @@ export const rentals: Rental[] = [
     type: "2 BHK Flat",
     location: "Lakeside, Pokhara",
     alt: "Rooftop terrace overlooking the mountains",
+    features: ["Mountain View", "24/7 Water Supply", "Rooftop Access"],
   },
   {
     id: 6,
@@ -48,5 +53,6 @@ export const rentals: Rental[] = [
     type: "Single Room",
     location: "Sanepa, Lalitpur",
     alt: "Warm bedroom with natural light",
+    features: ["Furnished", "Quiet Neighborhood", "Wi-Fi Ready"],
   },
 ];

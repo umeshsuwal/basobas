@@ -5,4 +5,5 @@ export interface Rental {
   type: string;
   location: string;
   alt: string;
+  features: string[];
 }

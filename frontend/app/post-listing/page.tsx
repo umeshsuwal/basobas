@@ -5,9 +5,38 @@ import Link from "next/link";
 import { AccountHeader } from "@/components/AccountHeader";
 import { RoleGate } from "@/components/RoleGate";
 
+const featureOptions = [
+  "24/7 Water Supply",
+  "Electricity Sub-meter",
+  "Parking",
+  "Furnished",
+  "Private Balcony",
+  "Solar Backup",
+  "Wi-Fi Ready",
+  "Pet Friendly",
+];
+
 export default function PostListingPage() {
   const [roomType, setRoomType] = useState("Single Room");
+  const [features, setFeatures] = useState<string[]>([]);
+  const [customFeature, setCustomFeature] = useState("");
   const [published, setPublished] = useState(false);
+
+  function toggleFeature(feature: string) {
+    setFeatures((current) =>
+      current.includes(feature)
+        ? current.filter((item) => item !== feature)
+        : [...current, feature],
+    );
+  }
+
+  function addCustomFeature() {
+    const feature = customFeature.trim();
+    if (feature && !features.includes(feature)) {
+      setFeatures((current) => [...current, feature]);
+    }
+    setCustomFeature("");
+  }
 
   function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -24,6 +53,49 @@ export default function PostListingPage() {
           <label className="block font-semibold text-slate-900">Listing Title<input required placeholder="e.g., Sunny room with balcony near Baneshwor Chowk" className="mt-2 w-full rounded-xl bg-brand-50 p-3 font-normal outline-none ring-1 ring-transparent focus:ring-brand-200" /></label>
           <fieldset><legend className="font-semibold text-slate-900">Room Type</legend><div className="mt-2 grid grid-cols-3 gap-2">{["Single Room", "1 BHK / Flat", "Shared Room"].map((option) => <button type="button" key={option} onClick={() => setRoomType(option)} className={`rounded-xl p-3 text-sm ${roomType === option ? "bg-brand-600 text-white" : "bg-brand-50 text-slate-700"}`}>{option}</button>)}</div></fieldset>
           <div className="grid gap-4 sm:grid-cols-2"><label className="font-semibold text-slate-900">Monthly Rent (NPR)<input required type="number" placeholder="15,000" className="mt-2 w-full rounded-xl bg-brand-50 p-3 font-normal outline-none focus:ring-2 focus:ring-brand-100" /></label><label className="font-semibold text-slate-900">Area / Location<input required placeholder="Shantinagar, Kathmandu" className="mt-2 w-full rounded-xl bg-brand-50 p-3 font-normal outline-none focus:ring-2 focus:ring-brand-100" /></label></div>
+          <fieldset>
+            <legend className="font-semibold text-slate-900">Features &amp; Amenities</legend>
+            <p className="mt-1 text-sm font-normal text-slate-500">Select what is available at the property.</p>
+            <div className="mt-3 flex flex-wrap gap-2">
+              {featureOptions.map((feature) => (
+                <button
+                  type="button"
+                  key={feature}
+                  aria-pressed={features.includes(feature)}
+                  onClick={() => toggleFeature(feature)}
+                  className={`rounded-full px-4 py-2 text-sm transition ${
+                    features.includes(feature)
+                      ? "bg-brand-700 text-white"
+                      : "bg-brand-50 text-slate-700 hover:bg-brand-100"
+                  }`}
+                >
+                  {features.includes(feature) ? "✓ " : ""}
+                  {feature}
+                </button>
+              ))}
+            </div>
+            <div className="mt-3 flex gap-2">
+              <input
+                value={customFeature}
+                onChange={(event) => setCustomFeature(event.target.value)}
+                onKeyDown={(event) => {
+                  if (event.key === "Enter") {
+                    event.preventDefault();
+                    addCustomFeature();
+                  }
+                }}
+                placeholder="Add another feature"
+                className="min-w-0 flex-1 rounded-xl bg-brand-50 p-3 font-normal outline-none focus:ring-2 focus:ring-brand-100"
+              />
+              <button
+                type="button"
+                onClick={addCustomFeature}
+                className="rounded-xl bg-brand-50 px-4 py-3 text-sm font-semibold text-brand-700 hover:bg-brand-100"
+              >
+                Add
+              </button>
+            </div>
+          </fieldset>
           <label className="block font-semibold text-slate-900">Short Description<textarea required rows={4} placeholder="Describe the space, sunlight, water facility, or house rules briefly..." className="mt-2 w-full resize-none rounded-xl bg-brand-50 p-3 font-normal outline-none focus:ring-2 focus:ring-brand-100" /></label>
           <button type="submit" className="w-full rounded-xl bg-brand-600 p-3 font-semibold text-white hover:bg-brand-700">↑ Publish Listing</button>
           {published && <p role="status" className="text-center text-sm font-medium text-emerald-600">Listing saved as a draft for backend publishing.</p>}

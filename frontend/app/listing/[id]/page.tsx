@@ -4,13 +4,6 @@ import { notFound } from "next/navigation";
 import { SiteHeader } from "@/components/SiteHeader";
 import { rentals } from "@/lib/rentals";
 
-const details = [
-  ["Room type", "1 BHK Flat"],
-  ["Furnishing", "Semi-Furnished"],
-  ["Security deposit", "1 Month (रु16.5k)"],
-  ["Available from", "Immediate"],
-];
-
 export default async function ListingDetailPage({
   params,
 }: {
@@ -28,6 +21,12 @@ export default async function ListingDetailPage({
     title: `${rental.type} in ${rental.location.split(",")[0]}`,
     description: `A well-maintained ${rental.type.toLowerCase()} in ${rental.location}, with a comfortable layout and convenient access to nearby amenities.`,
   };
+  const details = [
+    ["Room type", listing.type],
+    ["Furnishing", "Furnished"],
+    ["Security deposit", `1 Month (रु${listing.price})`],
+    ["Available from", "Immediate"],
+  ];
 
   return (
     <main className="min-h-screen bg-[#f8f9ff]">
@@ -52,7 +51,7 @@ export default async function ListingDetailPage({
           {details.map(([label, value]) => <div key={label} className="rounded-xl bg-brand-50 p-4"><p className="text-xs uppercase text-slate-500">{label}</p><p className="mt-2 font-semibold text-slate-900">{value}</p></div>)}
         </div>
         <div className="flex flex-wrap gap-3">
-          {["24/7 Water Supply", "Electricity Sub-meter", "Private Sunlit Balcony", "Gated Bike Parking"].map((item) => <span key={item} className="rounded-full border border-blue-100 bg-white px-4 py-2 text-sm text-slate-700">◉ {item}</span>)}
+          {listing.features.map((item) => <span key={item} className="rounded-full border border-blue-100 bg-white px-4 py-2 text-sm text-slate-700">◉ {item}</span>)}
         </div>
         <section className="mt-12">
           <h2 className="text-xl font-bold text-slate-900">About this Flat</h2>
