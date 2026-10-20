@@ -30,5 +30,5 @@ npm run lint
 npm run build
 ```
 
-Authentication and listing data currently use mock services in `lib/` so the
-frontend can be developed independently of the backend.
+Authentication uses the local NestJS API. Set `NEXT_PUBLIC_API_URL` when the
+API is not running at `http://localhost:3001`.

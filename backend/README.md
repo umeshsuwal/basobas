@@ -31,6 +31,23 @@
 $ npm install
 ```
 
+The backend uses the SQLite database in `database/prisma/dev.db`. From the
+repository root, initialize it and generate the backend client before starting
+the API:
+
+```powershell
+Copy-Item database/.env.example database/.env
+Set-Location database
+npm install
+npm run db:migrate
+Set-Location ../backend
+npx prisma generate --schema ../database/prisma/schema.prisma
+npm run start:dev
+```
+
+The frontend can then use the API at `http://localhost:3001`; set
+`NEXT_PUBLIC_API_URL` if it is hosted elsewhere.
+
 ## Compile and run the project
 
 ```bash

@@ -2,11 +2,11 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { DEMO_ACCOUNTS, mockLogin, mockSignup } from "@/lib/auth/mockAuth";
-import type { UserRole } from "@/types/auth";
+import type { AuthResponse, UserRole } from "@/types/auth";
 import { useAuth } from "@/providers/AuthProvider";
 
 type AuthMode = "login" | "signup";
+const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3001";
 
 interface AuthForm {
   name: string;
@@ -46,13 +46,36 @@ export function LoginForm() {
     setLoading(true);
 
     try {
-      const response =
-        mode === "signup"
-          ? await mockSignup({ ...form, role })
-          : await mockLogin(form.email, form.password);
+      const response = await fetch(
+        `${API_URL}/auth/${mode === "signup" ? "signup" : "login"}`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(
+            mode === "signup" ? { ...form, role } : {
+              email: form.email,
+              password: form.password,
+            },
+          ),
+        },
+      );
+      const responseBody = (await response.json()) as
+        | AuthResponse
+        | { message: string | string[] };
+      if (!response.ok || !("token" in responseBody)) {
+        throw new Error(
+          "message" in responseBody
+            ? Array.isArray(responseBody.message)
+              ? responseBody.message.join(", ")
+              : responseBody.message
+            : "Unable to authenticate",
+        );
+      }
 
-      login(response.user, response.token);
-      router.push(response.user.role === "landlord" ? "/dashboard" : "/feed");
+      login(responseBody.user, responseBody.token);
+      router.push(
+        responseBody.user.role === "landlord" ? "/dashboard" : "/feed",
+      );
     } catch (requestError: unknown) {
       setError(
         requestError instanceof Error
@@ -153,20 +176,6 @@ export function LoginForm() {
             onChange={(event) => updateField("password", event.target.value)}
           />
         </label>
-
-        {mode === "login" && (
-          <div className="rounded-xl border border-blue-100 bg-brand-50 p-3 text-xs leading-5 text-slate-600">
-            <p className="font-semibold text-slate-900">Demo credentials</p>
-            <p className="mt-1">
-              Tenant: <code>{DEMO_ACCOUNTS.tenant.email}</code> /{" "}
-              <code>{DEMO_ACCOUNTS.tenant.password}</code>
-            </p>
-            <p>
-              Landlord: <code>{DEMO_ACCOUNTS.landlord.email}</code> /{" "}
-              <code>{DEMO_ACCOUNTS.landlord.password}</code>
-            </p>
-          </div>
-        )}
 
         {error && (
           <p role="alert" className="text-sm text-red-600">
