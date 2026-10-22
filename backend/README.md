@@ -48,6 +48,21 @@ npm run start:dev
 The frontend can then use the API at `http://localhost:3001`; set
 `NEXT_PUBLIC_API_URL` if it is hosted elsewhere.
 
+Authenticated requests use the returned token as a bearer token:
+
+```text
+Authorization: Bearer <token>
+```
+
+The authentication API also provides protected session endpoints:
+
+```text
+GET  /auth/me
+POST /auth/logout
+```
+
+Expired or revoked sessions receive `401 Unauthorized`.
+
 ## Compile and run the project
 
 ```bash

@@ -6,6 +6,7 @@ import {
 import { createHash, randomBytes, scrypt as scryptCallback } from 'node:crypto';
 import { promisify } from 'node:util';
 import { PrismaService } from '../prisma.service';
+import type { AuthenticatedUser } from './auth.types';
 
 const scrypt = promisify(scryptCallback);
 const SESSION_DURATION_MS = 1000 * 60 * 60 * 24 * 30;
@@ -71,6 +72,29 @@ export class AuthService {
     }
 
     return this.createAuthResponse(user);
+  }
+
+  async validateSession(token: string): Promise<AuthenticatedUser | null> {
+    const session = await this.prisma.session.findUnique({
+      where: { tokenHash: this.hashToken(token) },
+      include: { user: true },
+    });
+
+    if (!session) return null;
+
+    if (session.expiresAt <= new Date()) {
+      await this.prisma.session.delete({ where: { id: session.id } });
+      return null;
+    }
+
+    const { passwordHash: _passwordHash, ...user } = session.user;
+    return user;
+  }
+
+  async revokeSession(token: string) {
+    await this.prisma.session.deleteMany({
+      where: { tokenHash: this.hashToken(token) },
+    });
   }
 
   private async createAuthResponse(user: {
