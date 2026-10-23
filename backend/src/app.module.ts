@@ -6,6 +6,8 @@ import { AuthController } from './auth/auth.controller';
 import { AuthService } from './auth/auth.service';
 import { AuthGuard } from './auth/auth.guard';
 import { PrismaService } from './prisma.service';
+import { ListingController } from './listings/listing.controller';
+import { ListingService } from './listings/listing.service';
 
 export const { ObserveModule, ObserveInstrument } = createObserveModule();
 
@@ -19,7 +21,7 @@ export const { ObserveModule, ObserveInstrument } = createObserveModule();
       serviceId: 'backend',
     }),
   ],
-  controllers: [AppController, AuthController],
-  providers: [AppService, AuthService, PrismaService, AuthGuard],
+  controllers: [AppController, AuthController, ListingController],
+  providers: [AppService, AuthService, PrismaService, AuthGuard, ListingService],
 })
 export class AppModule {}

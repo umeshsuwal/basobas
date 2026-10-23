@@ -38,7 +38,7 @@ export async function mockSignup(data: SignupData): Promise<AuthResponse> {
   return {
     token: MOCK_TOKEN,
     user: {
-      id: 1,
+      id: "demo-tenant",
       name: data.name,
       email: data.email,
       phone: data.phone,
@@ -69,7 +69,7 @@ export async function mockLogin(email: string, password: string): Promise<AuthRe
   return {
     token: MOCK_TOKEN,
     user: {
-      id: account.role === "landlord" ? 2 : 1,
+      id: account.role === "landlord" ? "demo-landlord" : "demo-tenant",
       name: account.name,
       email: account.email,
       phone: account.phone,

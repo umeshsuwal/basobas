@@ -63,6 +63,20 @@ POST /auth/logout
 
 Expired or revoked sessions receive `401 Unauthorized`.
 
+Listing endpoints:
+
+```text
+GET    /listings
+GET    /listings/:id
+GET    /listings/mine              (authenticated landlord)
+POST   /listings                   (authenticated landlord)
+PATCH  /listings/:id               (listing owner)
+DELETE /listings/:id               (listing owner)
+```
+
+Create and update requests use JSON with `title`, `description`, `roomType`,
+`monthlyRent`, `location`, and an optional `features` string array.
+
 ## Compile and run the project
 
 ```bash
