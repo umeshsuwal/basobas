@@ -1,5 +1,5 @@
 export interface Rental {
-  id: number;
+  id: string;
   image: string;
   price: string;
   type: string;

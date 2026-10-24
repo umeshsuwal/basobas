@@ -4,27 +4,60 @@ import { notFound } from "next/navigation";
 import { SiteHeader } from "@/components/SiteHeader";
 import { rentals } from "@/lib/rentals";
 
+const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3001";
+
+interface ApiListing {
+  id: string;
+  title: string;
+  description: string;
+  roomType: string;
+  monthlyRent: number;
+  location: string;
+  features: { name: string }[];
+}
+
+interface DetailListing {
+  title: string;
+  description: string;
+  roomType: string;
+  monthlyRent: number;
+  location: string;
+  features: { name: string }[];
+}
+
 export default async function ListingDetailPage({
   params,
 }: {
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const rental = rentals.find((item) => item.id === Number(id));
-
-  if (!rental) {
-    notFound();
+  const response = await fetch(`${API_URL}/listings/${encodeURIComponent(id)}`, {
+    cache: "no-store",
+  }).catch(() => null);
+  let listing: DetailListing | undefined;
+  if (response?.ok) {
+    listing = (await response.json()) as ApiListing;
+  } else {
+    const rental = rentals.find((item) => item.id === id);
+    if (rental) {
+      listing = {
+        title: `${rental.type} in ${rental.location.split(",")[0]}`,
+        description: `A well-maintained ${rental.type.toLowerCase()} in ${rental.location}, with a comfortable layout and convenient access to nearby amenities.`,
+        roomType: rental.type,
+        monthlyRent: Number(rental.price.replaceAll(",", "")),
+        location: rental.location,
+        features: rental.features.map((name) => ({ name })),
+      };
+    }
   }
 
-  const listing = {
-    ...rental,
-    title: `${rental.type} in ${rental.location.split(",")[0]}`,
-    description: `A well-maintained ${rental.type.toLowerCase()} in ${rental.location}, with a comfortable layout and convenient access to nearby amenities.`,
-  };
+  if (!listing) {
+    notFound();
+  }
   const details = [
-    ["Room type", listing.type],
+    ["Room type", listing.roomType],
     ["Furnishing", "Furnished"],
-    ["Security deposit", `1 Month (रु${listing.price})`],
+    ["Security deposit", `1 Month (रु${listing.monthlyRent.toLocaleString("en-IN")})`],
     ["Available from", "Immediate"],
   ];
 
@@ -36,7 +69,7 @@ export default async function ListingDetailPage({
           <p><Link href="/" className="hover:text-brand-700">Rentals</Link> <span className="mx-2">›</span> Kathmandu <span className="mx-2">›</span> {listing.title}</p>
           <button type="button" className="rounded-full bg-brand-50 px-4 py-2 font-medium text-brand-700">♡ Save</button>
         </div>
-        <Image src={listing.image} alt="Bright furnished 1 BHK flat" width={1400} height={800} className="h-[310px] w-full rounded-2xl object-cover sm:h-[460px]" />
+        <Image src="/rentals/sunny-baneshwor.jpg" alt={listing.title} width={1400} height={800} className="h-[310px] w-full rounded-2xl object-cover sm:h-[460px]" />
         <section className="border-b border-slate-200 py-8">
           <p className="text-sm font-semibold text-brand-700">◉ Basobas Verified Property • Direct Homeowner</p>
           <div className="mt-3 flex flex-col justify-between gap-4 sm:flex-row">
@@ -44,14 +77,14 @@ export default async function ListingDetailPage({
               <h1 className="text-3xl font-bold tracking-tight text-slate-900">{listing.title}</h1>
               <p className="mt-2 text-slate-600">⌖ {listing.location}</p>
             </div>
-            <p className="text-2xl font-bold text-brand-700">रु{listing.price}<span className="text-sm font-medium text-slate-500">/month</span></p>
+            <p className="text-2xl font-bold text-brand-700">रु{listing.monthlyRent.toLocaleString("en-IN")}<span className="text-sm font-medium text-slate-500">/month</span></p>
           </div>
         </section>
         <div className="grid gap-3 py-8 sm:grid-cols-4">
           {details.map(([label, value]) => <div key={label} className="rounded-xl bg-brand-50 p-4"><p className="text-xs uppercase text-slate-500">{label}</p><p className="mt-2 font-semibold text-slate-900">{value}</p></div>)}
         </div>
         <div className="flex flex-wrap gap-3">
-          {listing.features.map((item) => <span key={item} className="rounded-full border border-blue-100 bg-white px-4 py-2 text-sm text-slate-700">◉ {item}</span>)}
+          {listing.features.map((item) => <span key={item.name} className="rounded-full border border-blue-100 bg-white px-4 py-2 text-sm text-slate-700">◉ {item.name}</span>)}
         </div>
         <section className="mt-12">
           <h2 className="text-xl font-bold text-slate-900">About this Flat</h2>

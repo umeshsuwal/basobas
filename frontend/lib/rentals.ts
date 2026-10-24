@@ -2,7 +2,7 @@ import type { Rental } from "@/types/rental";
 
 export const rentals: Rental[] = [
   {
-    id: 1,
+    id: "demo-1",
     image: "/rentals/sunny-baneshwor.jpg",
     price: "16,500",
     type: "1 BHK Flat",
@@ -11,7 +11,7 @@ export const rentals: Rental[] = [
     features: ["24/7 Water Supply", "Electricity Sub-meter", "Private Balcony", "Gated Bike Parking"],
   },
   {
-    id: 2,
+    id: "demo-2",
     image: "/rentals/jhamsikhel-studio.jpg",
     price: "9,000",
     type: "Single Room",
@@ -20,7 +20,7 @@ export const rentals: Rental[] = [
     features: ["24/7 Water Supply", "Furnished", "Wi-Fi Ready"],
   },
   {
-    id: 3,
+    id: "demo-3",
     image: "/rentals/baluwatar-flat.jpg",
     price: "28,000",
     type: "2 BHK Flat",
@@ -29,7 +29,7 @@ export const rentals: Rental[] = [
     features: ["24/7 Water Supply", "Parking", "Solar Backup", "Pet Friendly"],
   },
   {
-    id: 4,
+    id: "demo-4",
     image: "/rentals/koteshwor-room.jpg",
     price: "12,000",
     type: "Studio Flat",
@@ -38,7 +38,7 @@ export const rentals: Rental[] = [
     features: ["Electricity Sub-meter", "Furnished", "Gated Parking"],
   },
   {
-    id: 5,
+    id: "demo-5",
     image: "/rentals/lakeside-flat.jpg",
     price: "22,000",
     type: "2 BHK Flat",
@@ -47,7 +47,7 @@ export const rentals: Rental[] = [
     features: ["Mountain View", "24/7 Water Supply", "Rooftop Access"],
   },
   {
-    id: 6,
+    id: "demo-6",
     image: "/rentals/sanepa-room.jpg",
     price: "8,500",
     type: "Single Room",
