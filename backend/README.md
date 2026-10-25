@@ -37,6 +37,7 @@ the API:
 
 ```powershell
 Copy-Item database/.env.example database/.env
+Copy-Item backend/.env.example backend/.env
 Set-Location database
 npm install
 npm run db:migrate
@@ -47,6 +48,15 @@ npm run start:dev
 
 The frontend can then use the API at `http://localhost:3001`; set
 `NEXT_PUBLIC_API_URL` if it is hosted elsewhere.
+
+Add your Cloudinary credentials to `backend/.env` before uploading listing
+images:
+
+```text
+CLOUDINARY_CLOUD_NAME="your-cloud-name"
+CLOUDINARY_API_KEY="your-api-key"
+CLOUDINARY_API_SECRET="your-api-secret"
+```
 
 Authenticated requests use the returned token as a bearer token:
 
@@ -76,6 +86,12 @@ DELETE /listings/:id               (listing owner)
 
 Create and update requests use JSON with `title`, `description`, `roomType`,
 `monthlyRent`, `location`, and an optional `features` string array.
+
+Listing creation accepts `multipart/form-data` with the same fields, plus up to
+8 `images` files. Each image must be PNG, JPEG, or WEBP and no larger than
+5 MB. Images are uploaded to Cloudinary and their URLs are stored with the
+listing. Configure `CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY`, and
+`CLOUDINARY_API_SECRET` in the backend environment before uploading.
 
 ## Compile and run the project
 

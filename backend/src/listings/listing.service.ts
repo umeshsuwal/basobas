@@ -7,6 +7,7 @@ import {
 import type { Prisma } from '@prisma/client';
 import { PrismaService } from '../prisma.service';
 import type { AuthenticatedUser } from '../auth/auth.types';
+import { CloudinaryService } from './cloudinary.service';
 
 interface ListingInput {
   title: string;
@@ -14,7 +15,7 @@ interface ListingInput {
   roomType: string;
   monthlyRent: number;
   location: string;
-  features?: string[];
+  features?: string[] | string;
 }
 
 interface ListingFilters {
@@ -25,7 +26,10 @@ interface ListingFilters {
 
 @Injectable()
 export class ListingService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly cloudinary: CloudinaryService,
+  ) {}
 
   async findAll(filters: ListingFilters = {}) {
     return this.prisma.listing.findMany({
@@ -36,7 +40,7 @@ export class ListingService {
           : {}),
         ...(filters.roomType ? { roomType: filters.roomType.trim() } : {}),
       },
-      include: { features: true },
+      include: { features: true, images: true },
       orderBy: { createdAt: 'desc' },
     });
   }
@@ -44,7 +48,7 @@ export class ListingService {
   async findById(id: string) {
     const listing = await this.prisma.listing.findUnique({
       where: { id },
-      include: { features: true },
+      include: { features: true, images: true },
     });
     if (!listing) throw new NotFoundException('Listing not found');
     return listing;
@@ -54,14 +58,21 @@ export class ListingService {
     this.requireLandlord(user);
     return this.prisma.listing.findMany({
       where: { landlordId: user.id },
-      include: { features: true },
+      include: { features: true, images: true },
       orderBy: { createdAt: 'desc' },
     });
   }
 
-  async create(input: ListingInput, user: AuthenticatedUser) {
+  async create(
+    input: ListingInput,
+    user: AuthenticatedUser,
+    files: Express.Multer.File[] = [],
+  ) {
     this.requireLandlord(user);
     const data = this.validateInput(input);
+    const uploadedImages = await Promise.all(
+      files.map((file) => this.cloudinary.uploadListingImage(file)),
+    );
 
     return this.prisma.listing.create({
       data: {
@@ -70,8 +81,11 @@ export class ListingService {
         features: data.features
           ? { create: data.features.map((name) => ({ name })) }
           : undefined,
+        images: uploadedImages.length
+          ? { create: uploadedImages }
+          : undefined,
       },
-      include: { features: true },
+      include: { features: true, images: true },
     });
   }
 
@@ -90,7 +104,7 @@ export class ListingService {
             ? { create: data.features.map((name) => ({ name })) }
             : undefined,
         },
-        include: { features: true },
+        include: { features: true, images: true },
       });
     });
   }
@@ -128,10 +142,14 @@ export class ListingService {
     const roomType = input.roomType?.trim();
     const location = input.location?.trim();
     const monthlyRent = Number(input.monthlyRent);
-    const features = Array.isArray(input.features)
+    const rawFeatures =
+      typeof input.features === 'string'
+        ? this.parseFeatures(input.features)
+        : input.features;
+    const features = Array.isArray(rawFeatures)
       ? [
           ...new Set(
-            input.features
+            rawFeatures
               .filter((feature): feature is string => typeof feature === 'string')
               .map((feature) => feature.trim())
               .filter(Boolean),
@@ -153,5 +171,14 @@ export class ListingService {
     }
 
     return { title, description, roomType, monthlyRent, location, features };
+  }
+
+  private parseFeatures(features: string) {
+    try {
+      const parsed: unknown = JSON.parse(features);
+      return Array.isArray(parsed) ? parsed : [];
+    } catch {
+      throw new BadRequestException('Features must be a valid JSON array');
+    }
   }
 }

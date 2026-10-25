@@ -8,6 +8,7 @@ import { AuthGuard } from './auth/auth.guard';
 import { PrismaService } from './prisma.service';
 import { ListingController } from './listings/listing.controller';
 import { ListingService } from './listings/listing.service';
+import { CloudinaryService } from './listings/cloudinary.service';
 
 export const { ObserveModule, ObserveInstrument } = createObserveModule();
 
@@ -22,6 +23,13 @@ export const { ObserveModule, ObserveInstrument } = createObserveModule();
     }),
   ],
   controllers: [AppController, AuthController, ListingController],
-  providers: [AppService, AuthService, PrismaService, AuthGuard, ListingService],
+  providers: [
+    AppService,
+    AuthService,
+    PrismaService,
+    AuthGuard,
+    ListingService,
+    CloudinaryService,
+  ],
 })
 export class AppModule {}

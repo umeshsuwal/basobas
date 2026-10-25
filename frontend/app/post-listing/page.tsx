@@ -26,6 +26,7 @@ export default function PostListingPage() {
   const [published, setPublished] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [images, setImages] = useState<File[]>([]);
   const { user } = useAuth();
 
   function toggleFeature(feature: string) {
@@ -50,22 +51,23 @@ export default function PostListingPage() {
     setPublished(false);
     setLoading(true);
     const formData = new FormData(event.currentTarget);
+    const token = window.localStorage.getItem("token");
+    if (!token) {
+      setError("Your session has expired. Please log in again.");
+      setLoading(false);
+      return;
+    }
+    formData.set("roomType", roomType);
+    formData.set("features", JSON.stringify(features));
+    images.forEach((image) => formData.append("images", image));
 
     try {
       const response = await fetch(`${API_URL}/listings`, {
         method: "POST",
         headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${window.localStorage.getItem("token") ?? ""}`,
+          Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({
-          title: formData.get("title"),
-          description: formData.get("description"),
-          roomType,
-          monthlyRent: Number(formData.get("monthlyRent")),
-          location: formData.get("location"),
-          features,
-        }),
+        body: formData,
       });
       const body = (await response.json()) as
         | { id: string }
@@ -80,6 +82,7 @@ export default function PostListingPage() {
         );
       }
       setPublished(true);
+      setImages([]);
       event.currentTarget.reset();
     } catch (requestError: unknown) {
       setError(
@@ -98,7 +101,7 @@ export default function PostListingPage() {
       <section className="mx-auto max-w-2xl px-6 py-14">
         <div className="mb-8 text-center"><h1 className="text-3xl font-bold text-slate-900">Post a Listing</h1><p className="mt-2 text-slate-600">List your room or flat in under 2 minutes. Free forever for direct owners.</p></div>
         <form onSubmit={submit} className="space-y-6 rounded-2xl bg-white p-6 shadow-sm ring-1 ring-slate-100 sm:p-8">
-          <div><label className="font-semibold text-slate-900">Photos</label><div className="mt-3 grid place-items-center rounded-xl border-2 border-dashed border-blue-100 bg-brand-50 px-5 py-12 text-center"><p className="text-3xl">▣</p><p className="mt-2 font-semibold text-brand-700">Drag &amp; drop or browse photos</p><p className="text-sm text-slate-500">Add clear photos of the room, kitchen, and bathroom</p></div></div>
+          <div><label htmlFor="images" className="font-semibold text-slate-900">Photos</label><div className="mt-3 rounded-xl border-2 border-dashed border-blue-100 bg-brand-50 px-5 py-8 text-center"><p className="text-3xl">▣</p><p className="mt-2 font-semibold text-brand-700">Choose listing photos</p><p className="text-sm text-slate-500">PNG, JPG, or WEBP up to 5 MB each. Maximum 8 photos.</p><input id="images" name="images" type="file" accept="image/png,image/jpeg,image/webp" multiple onChange={(event) => setImages(Array.from(event.target.files ?? []))} className="mx-auto mt-4 block max-w-full text-sm text-slate-600" />{images.length > 0 && <p className="mt-3 text-sm text-brand-700">{images.length} photo{images.length === 1 ? "" : "s"} selected</p>}</div></div>
           <label className="block font-semibold text-slate-900">Listing Title<input name="title" required placeholder="e.g., Sunny room with balcony near Baneshwor Chowk" className="mt-2 w-full rounded-xl bg-brand-50 p-3 font-normal outline-none ring-1 ring-transparent focus:ring-brand-200" /></label>
           <fieldset><legend className="font-semibold text-slate-900">Room Type</legend><div className="mt-2 grid grid-cols-3 gap-2">{["Single Room", "1 BHK / Flat", "Shared Room"].map((option) => <button type="button" key={option} onClick={() => setRoomType(option)} className={`rounded-xl p-3 text-sm ${roomType === option ? "bg-brand-600 text-white" : "bg-brand-50 text-slate-700"}`}>{option}</button>)}</div></fieldset>
           <div className="grid gap-4 sm:grid-cols-2"><label className="font-semibold text-slate-900">Monthly Rent (NPR)<input name="monthlyRent" required min="1" type="number" placeholder="15,000" className="mt-2 w-full rounded-xl bg-brand-50 p-3 font-normal outline-none focus:ring-2 focus:ring-brand-100" /></label><label className="font-semibold text-slate-900">Area / Location<input name="location" required placeholder="Shantinagar, Kathmandu" className="mt-2 w-full rounded-xl bg-brand-50 p-3 font-normal outline-none focus:ring-2 focus:ring-brand-100" /></label></div>

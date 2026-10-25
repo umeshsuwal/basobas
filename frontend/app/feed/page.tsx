@@ -27,12 +27,13 @@ interface ApiListing {
   monthlyRent: number;
   location: string;
   features: { name: string }[];
+  images: { url: string }[];
 }
 
 function toRental(listing: ApiListing): Rental {
   return {
     id: listing.id,
-    image: "/rentals/sunny-baneshwor.jpg",
+    image: listing.images[0]?.url ?? "/rentals/sunny-baneshwor.jpg",
     price: listing.monthlyRent.toLocaleString("en-IN"),
     type: listing.roomType,
     location: listing.location,

@@ -14,6 +14,7 @@ interface ApiListing {
   monthlyRent: number;
   location: string;
   features: { name: string }[];
+  images: { url: string }[];
 }
 
 interface DetailListing {
@@ -23,6 +24,7 @@ interface DetailListing {
   monthlyRent: number;
   location: string;
   features: { name: string }[];
+  images: { url: string }[];
 }
 
 export default async function ListingDetailPage({
@@ -47,6 +49,7 @@ export default async function ListingDetailPage({
         monthlyRent: Number(rental.price.replaceAll(",", "")),
         location: rental.location,
         features: rental.features.map((name) => ({ name })),
+        images: [],
       };
     }
   }
@@ -69,7 +72,7 @@ export default async function ListingDetailPage({
           <p><Link href="/" className="hover:text-brand-700">Rentals</Link> <span className="mx-2">›</span> Kathmandu <span className="mx-2">›</span> {listing.title}</p>
           <button type="button" className="rounded-full bg-brand-50 px-4 py-2 font-medium text-brand-700">♡ Save</button>
         </div>
-        <Image src="/rentals/sunny-baneshwor.jpg" alt={listing.title} width={1400} height={800} className="h-[310px] w-full rounded-2xl object-cover sm:h-[460px]" />
+        <Image src={listing.images[0]?.url ?? "/rentals/sunny-baneshwor.jpg"} alt={listing.title} width={1400} height={800} className="h-[310px] w-full rounded-2xl object-cover sm:h-[460px]" />
         <section className="border-b border-slate-200 py-8">
           <p className="text-sm font-semibold text-brand-700">◉ Basobas Verified Property • Direct Homeowner</p>
           <div className="mt-3 flex flex-col justify-between gap-4 sm:flex-row">

@@ -23,5 +23,6 @@ npm run db:format
 ```
 
 The schema covers users, persistent auth sessions, landlords' listings, listing
-features, and tenants' rental applications. Status and role values are strings
-for SQLite portability.
+features, listing image metadata, and tenants' rental applications. Image
+files are stored in Cloudinary; SQLite stores their URLs and Cloudinary public
+IDs. Status and role values are strings for SQLite portability.
