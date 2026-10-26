@@ -31,16 +31,15 @@
 $ npm install
 ```
 
-The backend uses the SQLite database in `database/prisma/dev.db`. From the
-repository root, initialize it and generate the backend client before starting
-the API:
+The backend uses MongoDB Atlas through Prisma. From the repository root, add
+your `MONGODB_URI` to `backend/.env`, then generate the client and synchronize
+the schema:
 
 ```powershell
-Copy-Item database/.env.example database/.env
 Copy-Item backend/.env.example backend/.env
 Set-Location database
 npm install
-npm run db:migrate
+npm run db:sync
 Set-Location ../backend
 npx prisma generate --schema ../database/prisma/schema.prisma
 npm run start:dev
@@ -72,6 +71,19 @@ POST /auth/logout
 ```
 
 Expired or revoked sessions receive `401 Unauthorized`.
+
+Profile endpoints:
+
+```text
+GET   /profiles/me
+PATCH /profiles/me
+```
+
+Profiles are stored in MongoDB as role-specific documents linked one-to-one
+with the user. Landlord profiles support `bio`, `location`, and `avatarUrl`.
+Tenant profiles support `bio`, `occupation`, `preferredLocations`,
+`preferences`, and `avatarUrl`. Shared name and phone changes are saved on the
+user document. A profile document is created automatically during signup.
 
 Listing endpoints:
 

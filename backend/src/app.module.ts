@@ -9,6 +9,8 @@ import { PrismaService } from './prisma.service';
 import { ListingController } from './listings/listing.controller';
 import { ListingService } from './listings/listing.service';
 import { CloudinaryService } from './listings/cloudinary.service';
+import { ProfileController } from './profiles/profile.controller';
+import { ProfileService } from './profiles/profile.service';
 
 export const { ObserveModule, ObserveInstrument } = createObserveModule();
 
@@ -22,7 +24,12 @@ export const { ObserveModule, ObserveInstrument } = createObserveModule();
       serviceId: 'backend',
     }),
   ],
-  controllers: [AppController, AuthController, ListingController],
+  controllers: [
+    AppController,
+    AuthController,
+    ListingController,
+    ProfileController,
+  ],
   providers: [
     AppService,
     AuthService,
@@ -30,6 +37,7 @@ export const { ObserveModule, ObserveInstrument } = createObserveModule();
     AuthGuard,
     ListingService,
     CloudinaryService,
+    ProfileService,
   ],
 })
 export class AppModule {}

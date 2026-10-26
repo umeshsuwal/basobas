@@ -57,6 +57,9 @@ export class AuthService {
         phone,
         role: input.role,
         passwordHash: await this.hashPassword(input.password),
+        ...(input.role === 'landlord'
+          ? { landlordProfile: { create: {} } }
+          : { tenantProfile: { create: { preferredLocations: [], preferences: [] } } }),
       },
     });
 
