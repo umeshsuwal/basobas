@@ -70,7 +70,7 @@ export class ListingController {
     @Body() body: ListingBody,
     @CurrentUser() user: AuthenticatedUser,
     @UploadedFiles()
-    files: { images?: Express.Multer.File[] },
+    files: { images?: Express.Multer.File[] } = {},
   ) {
     return this.listingService.create(body, user, files.images ?? []);
   }

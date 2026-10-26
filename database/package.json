@@ -2,10 +2,10 @@
   "name": "basobas-local-database",
   "version": "0.1.0",
   "private": true,
-  "description": "Local SQLite database schema and Prisma tooling for Basobas",
+  "description": "MongoDB database schema and Prisma tooling for Basobas",
   "scripts": {
     "db:generate": "prisma generate",
-    "db:migrate": "prisma migrate dev",
+    "db:sync": "prisma db push",
     "db:push": "prisma db push",
     "db:studio": "prisma studio",
     "db:format": "prisma format",

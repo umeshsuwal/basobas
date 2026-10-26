@@ -112,7 +112,12 @@ export class ListingService {
   async remove(id: string, user: AuthenticatedUser) {
     this.requireLandlord(user);
     await this.requireOwnership(id, user);
-    await this.prisma.listing.delete({ where: { id } });
+    await this.prisma.$transaction(async (transaction) => {
+      await transaction.listingFeature.deleteMany({ where: { listingId: id } });
+      await transaction.listingImage.deleteMany({ where: { listingId: id } });
+      await transaction.application.deleteMany({ where: { listingId: id } });
+      await transaction.listing.delete({ where: { id } });
+    });
     return { success: true };
   }
 

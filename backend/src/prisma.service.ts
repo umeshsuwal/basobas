@@ -1,6 +1,5 @@
 import { Injectable, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
 import { PrismaClient } from '@prisma/client';
-import { resolve } from 'node:path';
 
 @Injectable()
 export class PrismaService
@@ -8,12 +7,17 @@ export class PrismaService
   implements OnModuleInit, OnModuleDestroy
 {
   constructor() {
+    const mongodbUri = process.env.MONGODB_URI;
+    if (!mongodbUri) {
+      throw new Error(
+        'MONGODB_URI is required to connect the backend to MongoDB',
+      );
+    }
+
     super({
       datasources: {
         db: {
-          url:
-            process.env.DATABASE_URL ??
-            `file:${resolve(process.cwd(), '../database/prisma/dev.db')}`,
+          url: mongodbUri,
         },
       },
     });

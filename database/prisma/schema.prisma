@@ -4,12 +4,12 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
-  url      = env("DATABASE_URL")
+  provider = "mongodb"
+  url      = env("MONGODB_URI")
 }
 
 model User {
-  id           String        @id @default(cuid())
+  id           String        @id @default(auto()) @map("_id") @db.ObjectId
   name         String
   email        String        @unique
   phone        String
@@ -20,13 +20,41 @@ model User {
   listings     Listing[]
   applications Application[]
   sessions     Session[]
+  landlordProfile LandlordProfile?
+  tenantProfile   TenantProfile?
+}
+
+model LandlordProfile {
+  id                String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId            String   @unique @db.ObjectId
+  user              User     @relation(fields: [userId], references: [id])
+  bio               String?
+  location          String?
+  avatarUrl         String?
+  verificationStatus String  @default("unverified")
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+}
+
+model TenantProfile {
+  id                 String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId             String   @unique @db.ObjectId
+  user               User     @relation(fields: [userId], references: [id])
+  bio                String?
+  occupation         String?
+  preferredLocations String[]
+  preferences        String[]
+  avatarUrl          String?
+  verificationStatus String   @default("unverified")
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
 }
 
 model Session {
-  id        String   @id @default(cuid())
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
   tokenHash String   @unique
-  userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    String   @db.ObjectId
+  user      User     @relation(fields: [userId], references: [id])
   expiresAt DateTime
   createdAt DateTime @default(now())
 
@@ -35,15 +63,15 @@ model Session {
 }
 
 model Listing {
-  id           String           @id @default(cuid())
+  id           String           @id @default(auto()) @map("_id") @db.ObjectId
   title        String
   description  String
   roomType     String
   monthlyRent  Int
   location     String
   status       String           @default("active")
-  landlordId   String
-  landlord     User             @relation(fields: [landlordId], references: [id], onDelete: Cascade)
+  landlordId   String           @db.ObjectId
+  landlord     User             @relation(fields: [landlordId], references: [id])
   features     ListingFeature[]
   applications Application[]
   images       ListingImage[]
@@ -55,34 +83,34 @@ model Listing {
 }
 
 model ListingFeature {
-  id        String  @id @default(cuid())
+  id        String  @id @default(auto()) @map("_id") @db.ObjectId
   name      String
-  listingId String
-  listing   Listing @relation(fields: [listingId], references: [id], onDelete: Cascade)
+  listingId String  @db.ObjectId
+  listing   Listing @relation(fields: [listingId], references: [id])
 
   @@unique([listingId, name])
   @@index([listingId])
 }
 
 model ListingImage {
-  id        String   @id @default(cuid())
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
   url       String
   publicId  String   @unique
-  listingId String
-  listing   Listing  @relation(fields: [listingId], references: [id], onDelete: Cascade)
+  listingId String   @db.ObjectId
+  listing   Listing  @relation(fields: [listingId], references: [id])
   createdAt DateTime @default(now())
 
   @@index([listingId])
 }
 
 model Application {
-  id        String   @id @default(cuid())
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
   message   String
   status    String   @default("pending")
-  listingId String
-  tenantId  String
-  listing   Listing  @relation(fields: [listingId], references: [id], onDelete: Cascade)
-  tenant    User     @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  listingId String   @db.ObjectId
+  tenantId  String   @db.ObjectId
+  listing   Listing  @relation(fields: [listingId], references: [id])
+  tenant    User     @relation(fields: [tenantId], references: [id])
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
