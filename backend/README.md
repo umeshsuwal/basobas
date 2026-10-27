@@ -96,6 +96,18 @@ PATCH  /listings/:id               (listing owner)
 DELETE /listings/:id               (listing owner)
 ```
 
+Application endpoints:
+
+```text
+POST   /applications               (authenticated tenant)
+GET    /applications/mine          (authenticated tenant)
+GET    /applications/received      (authenticated landlord)
+PATCH  /applications/:id/status    (listing owner)
+```
+
+Applications require a `listingId` and message. A tenant can apply only once
+per listing, and landlords can update applications for their own listings.
+
 Create and update requests use JSON with `title`, `description`, `roomType`,
 `monthlyRent`, `location`, and an optional `features` string array.
 

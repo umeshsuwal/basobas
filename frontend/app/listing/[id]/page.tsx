@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { SiteHeader } from "@/components/SiteHeader";
 import { rentals } from "@/lib/rentals";
+import { ApplyButton } from "@/components/ApplyButton";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3001";
 
@@ -101,7 +102,7 @@ export default async function ListingDetailPage({
         <div className="mt-10 flex flex-col items-center justify-between gap-5 rounded-2xl bg-brand-50 p-6 sm:flex-row">
           <div><p className="font-semibold text-slate-900">Saroj Thapa</p><p className="text-sm text-slate-600">◉ Verified Homeowner • Resides on ground floor</p></div>
           <div className="flex flex-wrap gap-3">
-            <Link href="/applications" className="rounded-xl bg-brand-700 px-6 py-3 font-semibold text-white hover:bg-brand-900">Apply for this rental</Link>
+            <ApplyButton listingId={id} />
             <button type="button" className="rounded-xl bg-brand-50 px-6 py-3 font-semibold text-brand-700 hover:bg-brand-100">☎ Show Contact Number</button>
           </div>
         </div>

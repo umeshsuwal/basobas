@@ -11,6 +11,8 @@ import { ListingService } from './listings/listing.service';
 import { CloudinaryService } from './listings/cloudinary.service';
 import { ProfileController } from './profiles/profile.controller';
 import { ProfileService } from './profiles/profile.service';
+import { ApplicationController } from './applications/application.controller';
+import { ApplicationService } from './applications/application.service';
 
 export const { ObserveModule, ObserveInstrument } = createObserveModule();
 
@@ -29,6 +31,7 @@ export const { ObserveModule, ObserveInstrument } = createObserveModule();
     AuthController,
     ListingController,
     ProfileController,
+    ApplicationController,
   ],
   providers: [
     AppService,
@@ -38,6 +41,7 @@ export const { ObserveModule, ObserveInstrument } = createObserveModule();
     ListingService,
     CloudinaryService,
     ProfileService,
+    ApplicationService,
   ],
 })
 export class AppModule {}
