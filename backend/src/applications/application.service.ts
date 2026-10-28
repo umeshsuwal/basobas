@@ -64,7 +64,15 @@ export class ApplicationService {
     return this.prisma.application.findMany({
       where: { listing: { landlordId: user.id } },
       include: {
-        tenant: { select: { id: true, name: true, email: true, phone: true } },
+        tenant: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+            phone: true,
+            tenantProfile: { select: { occupation: true } },
+          },
+        },
         listing: { select: { id: true, title: true } },
       },
       orderBy: { createdAt: 'desc' },

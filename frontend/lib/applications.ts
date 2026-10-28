@@ -11,10 +11,31 @@ export interface TenantApplication {
   };
 }
 
+export interface ReceivedApplication {
+  id: string;
+  message: string;
+  status: "pending" | "approved" | "rejected";
+  createdAt: string;
+  tenant: {
+    id: string;
+    name: string;
+    email: string;
+    phone: string;
+    tenantProfile?: {
+      occupation: string | null;
+    } | null;
+  };
+  listing: {
+    id: string;
+    title: string;
+  };
+}
+
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3001";
 
 function authHeaders() {
-  return { Authorization: `Bearer ${window.localStorage.getItem("token")}` };
+  const token = window.localStorage.getItem("token");
+  return { Authorization: `Bearer ${token ?? ""}` };
 }
 
 async function parseResponse<T extends object>(response: Response) {
@@ -28,6 +49,25 @@ async function parseResponse<T extends object>(response: Response) {
 export async function getMyApplications() {
   return parseResponse<TenantApplication[]>(
     await fetch(`${API_URL}/applications/mine`, { headers: authHeaders() }),
+  );
+}
+
+export async function getReceivedApplications() {
+  return parseResponse<ReceivedApplication[]>(
+    await fetch(`${API_URL}/applications/received`, { headers: authHeaders() }),
+  );
+}
+
+export async function updateApplicationStatus(
+  id: string,
+  status: ReceivedApplication["status"],
+) {
+  return parseResponse<ReceivedApplication>(
+    await fetch(`${API_URL}/applications/${id}/status`, {
+      method: "PATCH",
+      headers: { ...authHeaders(), "Content-Type": "application/json" },
+      body: JSON.stringify({ status }),
+    }),
   );
 }
 
