@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import type { AuthResponse, UserRole } from "@/types/auth";
 import { useAuth } from "@/providers/AuthProvider";
@@ -196,8 +197,13 @@ export function LoginForm() {
         </button>
         <p className="text-center text-xs leading-5 text-slate-500">
           By continuing, you agree to Basobas{" "}
-          <span className="font-medium text-brand-700">Terms</span> &amp;{" "}
-          <span className="font-medium text-brand-700">Privacy Policy</span>.
+          <Link
+            href="/terms"
+            className="font-medium text-brand-700 hover:underline"
+          >
+            Terms &amp; Conditions
+          </Link>
+          .
         </p>
       </form>
     </>

@@ -46,7 +46,9 @@ export function SiteFooter() {
             <p className="mt-3 leading-6">
               Contact Support
               <br />
-              Terms &amp; Privacy
+              <Link href="/terms" className="hover:text-brand-700">
+                Terms &amp; Conditions
+              </Link>
             </p>
           </div>
         </div>
