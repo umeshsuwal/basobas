@@ -36,7 +36,9 @@ export function SiteFooter() {
             <p className="mt-3 leading-6">
               How it Works
               <br />
-              Safety Guidelines
+              <Link href="/safety" className="hover:text-brand-700">
+                Safety Guidelines
+              </Link>
               <br />
               List Property
             </p>
