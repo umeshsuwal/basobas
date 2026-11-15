@@ -44,7 +44,9 @@ export function SiteFooter() {
           <div>
             <h2 className="font-semibold text-slate-900">Support</h2>
             <p className="mt-3 leading-6">
-              Contact Support
+              <Link href="/contact" className="hover:text-brand-700">
+                Contact Support
+              </Link>
               <br />
               <Link href="/terms" className="hover:text-brand-700">
                 Terms &amp; Conditions
