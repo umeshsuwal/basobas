@@ -36,3 +36,23 @@ export async function updateMyProfile(
   }
   return body;
 }
+
+export async function uploadProfileImage(file: File): Promise<string> {
+  const formData = new FormData();
+  formData.append("avatar", file);
+
+  const response = await fetch(`${API_URL}/profiles/me/avatar`, {
+    method: "POST",
+    headers: { Authorization: `Bearer ${getToken()}` },
+    body: formData,
+  });
+  const body = (await response.json()) as
+    | { avatarUrl: string }
+    | { message: string };
+  if (!response.ok || !("avatarUrl" in body)) {
+    throw new Error(
+      "message" in body ? body.message : "Unable to upload profile image",
+    );
+  }
+  return body.avatarUrl;
+}

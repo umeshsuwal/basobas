@@ -6,6 +6,7 @@ import {
 } from '@nestjs/common';
 import { PrismaService } from '../prisma.service';
 import type { AuthenticatedUser } from '../auth/auth.types';
+import { CloudinaryService } from '../listings/cloudinary.service';
 
 interface ProfileUpdateInput {
   name?: string;
@@ -20,7 +21,10 @@ interface ProfileUpdateInput {
 
 @Injectable()
 export class ProfileService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly cloudinary: CloudinaryService,
+  ) {}
 
   async getCurrentProfile(user: AuthenticatedUser) {
     const currentUser = await this.prisma.user.findUnique({
@@ -130,6 +134,41 @@ export class ProfileService {
           ? updatedUser.landlordProfile
           : updatedUser.tenantProfile,
     };
+  }
+
+  async updateAvatar(
+    user: AuthenticatedUser,
+    file?: Express.Multer.File,
+  ) {
+    if (!file) {
+      throw new BadRequestException('Profile image is required');
+    }
+
+    const uploadedImage = await this.cloudinary.uploadProfileImage(file);
+    const profileData = { avatarUrl: uploadedImage.url };
+
+    if (user.role === 'landlord') {
+      await this.prisma.landlordProfile.upsert({
+        where: { userId: user.id },
+        create: { userId: user.id, ...profileData },
+        update: profileData,
+      });
+    } else if (user.role === 'tenant') {
+      await this.prisma.tenantProfile.upsert({
+        where: { userId: user.id },
+        create: {
+          userId: user.id,
+          preferredLocations: [],
+          preferences: [],
+          ...profileData,
+        },
+        update: profileData,
+      });
+    } else {
+      throw new ForbiddenException('Unsupported user role');
+    }
+
+    return profileData;
   }
 
   private optionalText(value: string | undefined) {

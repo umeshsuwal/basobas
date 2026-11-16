@@ -22,6 +22,14 @@ export class CloudinaryService {
   }
 
   async uploadListingImage(file: Express.Multer.File) {
+    return this.uploadImage(file, 'basobas/listings');
+  }
+
+  async uploadProfileImage(file: Express.Multer.File) {
+    return this.uploadImage(file, 'basobas/profiles');
+  }
+
+  private async uploadImage(file: Express.Multer.File, folder: string) {
     if (
       !process.env.CLOUDINARY_CLOUD_NAME ||
       !process.env.CLOUDINARY_API_KEY ||
@@ -35,7 +43,7 @@ export class CloudinaryService {
     return new Promise<UploadedListingImage>((resolve, reject) => {
       const upload = cloudinary.uploader.upload_stream(
         {
-          folder: 'basobas/listings',
+          folder,
           resource_type: 'image',
         },
         (error, result) => {
