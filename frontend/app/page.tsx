@@ -1,16 +1,90 @@
 "use client";
 
 import type { FormEvent } from "react";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { SiteHeader } from "@/components/SiteHeader";
 import { RentalCard } from "@/components/home/RentalCard";
 import { SearchBar } from "@/components/home/SearchBar";
 import { SiteFooter } from "@/components/home/SiteFooter";
-import { rentals } from "@/lib/rentals";
+import type { Rental } from "@/types/rental";
+
+const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3001";
+
+interface ApiListing {
+  id: string;
+  title: string;
+  description: string;
+  roomType: string;
+  monthlyRent: number;
+  location: string;
+  features: { name: string }[];
+  images: { url: string }[];
+}
+
+function toRental(listing: ApiListing): Rental {
+  return {
+    id: listing.id,
+    image: listing.images[0]?.url ?? "/rentals/sunny-baneshwor.jpg",
+    price: listing.monthlyRent.toLocaleString("en-IN"),
+    type: listing.roomType,
+    location: listing.location,
+    alt: listing.title,
+    features: listing.features.map((feature) => feature.name),
+  };
+}
 
 export default function Home() {
+  const [rentals, setRentals] = useState<Rental[]>([]);
   const [query, setQuery] = useState("");
   const [submittedQuery, setSubmittedQuery] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function loadListings() {
+      try {
+        const response = await fetch(`${API_URL}/listings`);
+        const body = (await response.json()) as
+          | ApiListing[]
+          | { message: string | string[] };
+
+        if (!response.ok || !Array.isArray(body)) {
+          throw new Error(
+            "message" in body
+              ? Array.isArray(body.message)
+                ? body.message.join(", ")
+                : body.message
+              : "Unable to load listings",
+          );
+        }
+
+        if (!cancelled) {
+          setRentals(body.map(toRental));
+          setError("");
+        }
+      } catch (requestError: unknown) {
+        if (!cancelled) {
+          setError(
+            requestError instanceof Error
+              ? requestError.message
+              : "Unable to load listings",
+          );
+        }
+      } finally {
+        if (!cancelled) {
+          setLoading(false);
+        }
+      }
+    }
+
+    loadListings();
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   const visibleRentals = useMemo(() => {
     const normalizedQuery = submittedQuery.trim().toLowerCase();
@@ -20,9 +94,11 @@ export default function Home() {
     }
 
     return rentals.filter((rental) =>
-      `${rental.location} ${rental.type}`.toLowerCase().includes(normalizedQuery),
+      `${rental.location} ${rental.type}`
+        .toLowerCase()
+        .includes(normalizedQuery),
     );
-  }, [submittedQuery]);
+  }, [rentals, submittedQuery]);
 
   function handleSearch(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -52,7 +128,8 @@ export default function Home() {
           <h1 className="text-3xl font-bold tracking-tight text-slate-900">
             Available Rentals
           </h1>
-          {submittedQuery && (
+
+          {submittedQuery && !loading && !error && (
             <p className="text-sm text-slate-500">
               {visibleRentals.length} result
               {visibleRentals.length === 1 ? "" : "s"} found
@@ -60,7 +137,18 @@ export default function Home() {
           )}
         </div>
 
-        {visibleRentals.length > 0 ? (
+        {loading ? (
+          <div className="rounded-2xl bg-white px-6 py-16 text-center ring-1 ring-slate-100">
+            <p className="font-semibold text-slate-900">Loading rentals...</p>
+          </div>
+        ) : error ? (
+          <div className="rounded-2xl bg-white px-6 py-16 text-center ring-1 ring-slate-100">
+            <p className="font-semibold text-red-700">
+              Unable to load rentals.
+            </p>
+            <p className="mt-2 text-sm text-slate-500">{error}</p>
+          </div>
+        ) : visibleRentals.length > 0 ? (
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             {visibleRentals.map((rental) => (
               <RentalCard key={rental.id} rental={rental} />
@@ -69,10 +157,14 @@ export default function Home() {
         ) : (
           <div className="rounded-2xl bg-white px-6 py-16 text-center ring-1 ring-slate-100">
             <p className="font-semibold text-slate-900">
-              No rentals found in that area.
+              {rentals.length === 0
+                ? "No rentals available right now."
+                : "No rentals found in that area."}
             </p>
             <p className="mt-2 text-sm text-slate-500">
-              Try searching for Kathmandu, Lalitpur, or Pokhara.
+              {rentals.length === 0
+                ? "Check back later for new listings."
+                : "Try searching for Kathmandu, Lalitpur, or Pokhara."}
             </p>
           </div>
         )}
