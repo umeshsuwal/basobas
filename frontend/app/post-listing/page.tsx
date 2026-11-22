@@ -47,10 +47,11 @@ export default function PostListingPage() {
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    const form = event.currentTarget;
     setError("");
     setPublished(false);
     setLoading(true);
-    const formData = new FormData(event.currentTarget);
+    const formData = new FormData(form);
     const token = window.localStorage.getItem("token");
     if (!token) {
       setError("Your session has expired. Please log in again.");
@@ -59,7 +60,6 @@ export default function PostListingPage() {
     }
     formData.set("roomType", roomType);
     formData.set("features", JSON.stringify(features));
-    images.forEach((image) => formData.append("images", image));
 
     try {
       const response = await fetch(`${API_URL}/listings`, {
@@ -83,7 +83,7 @@ export default function PostListingPage() {
       }
       setPublished(true);
       setImages([]);
-      event.currentTarget.reset();
+      form.reset();
     } catch (requestError: unknown) {
       setError(
         requestError instanceof Error
