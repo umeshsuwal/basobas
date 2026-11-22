@@ -40,6 +40,19 @@ export class AuthController {
     return { user };
   }
 
+  @Post('change-password')
+  @UseGuards(AuthGuard)
+  changePassword(
+    @CurrentUser() user: AuthenticatedUser,
+    @Body()
+    body: {
+      currentPassword: string;
+      newPassword: string;
+    },
+  ) {
+    return this.authService.changePassword(user.id, body);
+  }
+
   @Post('logout')
   @UseGuards(AuthGuard)
   async logout(@Headers('authorization') authorization: string) {

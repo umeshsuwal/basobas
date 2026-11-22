@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   ConflictException,
   Injectable,
   UnauthorizedException,
@@ -45,7 +46,9 @@ export class AuthService {
       );
     }
 
-    const existingUser = await this.prisma.user.findUnique({ where: { email } });
+    const existingUser = await this.prisma.user.findUnique({
+      where: { email },
+    });
     if (existingUser) {
       throw new ConflictException('An account with this email already exists');
     }
@@ -59,7 +62,11 @@ export class AuthService {
         passwordHash: await this.hashPassword(input.password),
         ...(input.role === 'landlord'
           ? { landlordProfile: { create: {} } }
-          : { tenantProfile: { create: { preferredLocations: [], preferences: [] } } }),
+          : {
+              tenantProfile: {
+                create: { preferredLocations: [], preferences: [] },
+              },
+            }),
       },
     });
 
@@ -70,11 +77,65 @@ export class AuthService {
     const email = input.email.trim().toLowerCase();
     const user = await this.prisma.user.findUnique({ where: { email } });
 
-    if (!user || !(await this.verifyPassword(input.password, user.passwordHash))) {
+    if (
+      !user ||
+      !(await this.verifyPassword(input.password, user.passwordHash))
+    ) {
       throw new UnauthorizedException('Invalid email or password');
     }
 
     return this.createAuthResponse(user);
+  }
+
+  async changePassword(
+    userId: string,
+    input: { currentPassword: string; newPassword: string },
+  ) {
+    if (
+      typeof input.currentPassword !== 'string' ||
+      typeof input.newPassword !== 'string' ||
+      input.newPassword.length < 8
+    ) {
+      throw new BadRequestException(
+        'New password must be at least 8 characters long',
+      );
+    }
+
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+    });
+
+    if (!user) {
+      throw new UnauthorizedException('User not found');
+    }
+
+    const isCurrentPasswordValid = await this.verifyPassword(
+      input.currentPassword,
+      user.passwordHash,
+    );
+
+    if (!isCurrentPasswordValid) {
+      throw new UnauthorizedException('Current password is incorrect');
+    }
+
+    if (await this.verifyPassword(input.newPassword, user.passwordHash)) {
+      throw new BadRequestException(
+        'New password must be different from your current password',
+      );
+    }
+
+    await this.prisma.user.update({
+      where: { id: userId },
+      data: {
+        passwordHash: await this.hashPassword(input.newPassword),
+      },
+    });
+
+    await this.prisma.session.deleteMany({
+      where: { userId },
+    });
+
+    return { success: true, message: 'Password changed successfully' };
   }
 
   async validateSession(token: string): Promise<AuthenticatedUser | null> {
