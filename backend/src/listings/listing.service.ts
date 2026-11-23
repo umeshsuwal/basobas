@@ -48,8 +48,25 @@ export class ListingService {
   async findById(id: string) {
     const listing = await this.prisma.listing.findUnique({
       where: { id },
-      include: { features: true, images: true },
+      include: {
+        features: true,
+        images: true,
+        landlord: {
+          select: {
+            name: true,
+            landlordProfile: {
+              select: {
+                bio: true,
+                location: true,
+                avatarUrl: true,
+                verificationStatus: true,
+              },
+            },
+          },
+        },
+      },
     });
+
     if (!listing) throw new NotFoundException('Listing not found');
     return listing;
   }
@@ -81,9 +98,7 @@ export class ListingService {
         features: data.features
           ? { create: data.features.map((name) => ({ name })) }
           : undefined,
-        images: uploadedImages.length
-          ? { create: uploadedImages }
-          : undefined,
+        images: uploadedImages.length ? { create: uploadedImages } : undefined,
       },
       include: { features: true, images: true },
     });
@@ -138,10 +153,11 @@ export class ListingService {
     }
   }
 
-  private validateInput(input: ListingInput): Omit<
-    Prisma.ListingCreateInput,
-    'landlord' | 'features'
-  > & { features?: string[] } {
+  private validateInput(
+    input: ListingInput,
+  ): Omit<Prisma.ListingCreateInput, 'landlord' | 'features'> & {
+    features?: string[];
+  } {
     const title = input.title?.trim();
     const description = input.description?.trim();
     const roomType = input.roomType?.trim();
@@ -155,7 +171,9 @@ export class ListingService {
       ? [
           ...new Set(
             rawFeatures
-              .filter((feature): feature is string => typeof feature === 'string')
+              .filter(
+                (feature): feature is string => typeof feature === 'string',
+              )
               .map((feature) => feature.trim())
               .filter(Boolean),
           ),
