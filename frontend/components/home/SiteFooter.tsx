@@ -40,7 +40,9 @@ export function SiteFooter() {
                 Safety Guidelines
               </Link>
               <br />
-              List Property
+              <Link href="/" className="hover:text-brand-700">
+                List Property
+              </Link>
             </p>
           </div>
           <div>
